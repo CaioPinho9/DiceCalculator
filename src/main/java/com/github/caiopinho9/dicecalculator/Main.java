@@ -1,17 +1,10 @@
 package com.github.caiopinho9.dicecalculator;
 
-import org.jfree.data.category.CategoryDataset;
 import org.jfree.data.category.DefaultCategoryDataset;
-
-import java.lang.reflect.Array;
 import java.util.Arrays;
-import java.util.jar.JarInputStream;
 
 public class Main {
     public static void main(String[] args) {
-
-        System.out.println("caralho");
-
         String expression = "3d4";
         Operator operator = new Operator(expression);
         final String title = "Dice Calculator";
