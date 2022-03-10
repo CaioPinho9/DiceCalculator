@@ -1,0 +1,8 @@
+com/github/caiopinho9/dicecalculator/Chart.java
+ com.github.caiopinho9.dicecalculator.Chart
+com/github/caiopinho9/dicecalculator/Dice.java
+ com.github.caiopinho9.dicecalculator.Dice
+com/github/caiopinho9/dicecalculator/Operator.java
+ com.github.caiopinho9.dicecalculator.Operator
+com/github/caiopinho9/dicecalculator/Main.java
+ com.github.caiopinho9.dicecalculator.Main
