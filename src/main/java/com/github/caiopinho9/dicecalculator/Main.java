@@ -1,9 +1,11 @@
 package com.github.caiopinho9.dicecalculator;
 
 import org.jfree.data.category.DefaultCategoryDataset;
+import org.apache.commons.math3.util.Precision;
 
 import javax.swing.*;
 import java.util.Arrays;
+
 
 public class Main {
     public static void main(String[] args) {
@@ -34,7 +36,8 @@ public class Main {
         for (int i = 1; i < possibility.length; i++){
             if (possibility[i] != 0) {
                 double chance = possibility[i];
-                double probability = (chance/ Arrays.stream(possibility).sum())*100;
+
+                double probability = Precision.round((chance/ Arrays.stream(possibility).sum())*100,2);
                 dataset.addValue(probability, "Probability", String.valueOf(i + operator.getBonus()));
             }
         }
