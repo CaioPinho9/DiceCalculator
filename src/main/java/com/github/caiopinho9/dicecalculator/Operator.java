@@ -68,12 +68,14 @@ private String expression;
                 expandedExpression = new String[1];
                 expandedExpression[0] = expression;
                 readDice(0);
+            } else if (expression.equals("3")) {
+                JOptionPane.showMessageDialog (null, "Toma no Cu");
+
             } else {
                 JOptionPane.showMessageDialog (null, "Error: No valid expression");
 
             }
         }
-
         finish();
     }
 
@@ -137,8 +139,13 @@ private String expression;
 //        Soma Ex: 4d6
         } else {
             String[] division = expandedExpression[expressionNumber].split("D", 2);
+            int times;
+            if (!division[0].equals("")) {
+                times = Integer.parseInt(division[0]);
+            } else {
+                times = 1;
+            }
 
-            int times = Integer.parseInt(division[0]);
             int side = Integer.parseInt(division[1]);
             oldSummatory = diceArray(times, side);
 

@@ -11,7 +11,7 @@ public class Main {
 
 
     public static void main(String[] args) {
-        String expression = "3d4";
+        String expression;
         expression = JOptionPane.showInputDialog("Say Expression");
         Operator operator = new Operator(expression);
         final String title = "Dice Calculator";
