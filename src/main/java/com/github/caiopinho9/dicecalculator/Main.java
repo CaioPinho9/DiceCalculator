@@ -8,12 +8,19 @@ import java.util.Arrays;
 
 
 public class Main {
+
+
     public static void main(String[] args) {
         String expression = "3d4";
         expression = JOptionPane.showInputDialog("Say Expression");
         Operator operator = new Operator(expression);
         final String title = "Dice Calculator";
         double[] possibility;
+        double[] probability = new double[500];
+        double successDifficultyClassChance = 0;
+        double failDifficultyClassChance = 100;
+        boolean invertColor = false;
+
 
         possibility = operator.getPossibility();
         DefaultCategoryDataset dataset = new DefaultCategoryDataset();
@@ -32,19 +39,38 @@ public class Main {
         }
          */
 
-
-        for (int i = 1; i < possibility.length; i++){
-            if (possibility[i] != 0) {
-                double chance = possibility[i];
-
-                double probability = Precision.round((chance/ Arrays.stream(possibility).sum())*100,2);
-                dataset.addValue(probability, "Probability", String.valueOf(i + operator.getBonus()));
+        for (int i = 1; i < possibility.length; i++) {
+            double chance = possibility[i];
+            probability[i] = Precision.round((chance / Arrays.stream(possibility).sum()) * 100, 2);
+            if ((i + operator.getBonus())>=operator.getDifficultyClass()){
+                successDifficultyClassChance += probability[i];
+                failDifficultyClassChance -= probability[i];
             }
         }
 
+        successDifficultyClassChance = Precision.round(successDifficultyClassChance,2);
+        failDifficultyClassChance = Precision.round(failDifficultyClassChance,2);
 
-        Chart chart = new Chart(title, "", expression, dataset);
-        chart.showChart(800,640);
+        for (int i = 1; i < possibility.length; i++){
+            if (possibility[i] != 0) {
+                if (operator.getDifficultyClass() == 0) {
+                    dataset.addValue(probability[i], "100%", String.valueOf(i + operator.getBonus()));
+
+                } else if (i + operator.getBonus() < operator.getDifficultyClass()){
+                    dataset.addValue(probability[i], failDifficultyClassChance +"%", String.valueOf(i + operator.getBonus()));
+                    invertColor = true;
+
+                } else {
+                    dataset.addValue(probability[i], successDifficultyClassChance +"%", String.valueOf(i + operator.getBonus()));
+                }
+
+
+            }
+        }
+
+        Chart chart = new Chart(title, "", expression, dataset, invertColor);
+
+        chart.showChart(1000,700);
 
     }
 }

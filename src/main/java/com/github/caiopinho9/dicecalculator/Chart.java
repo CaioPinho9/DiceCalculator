@@ -4,10 +4,11 @@ import org.jfree.chart.*;
 import org.jfree.chart.labels.ItemLabelAnchor;
 import org.jfree.chart.labels.ItemLabelPosition;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
-import org.jfree.chart.plot.CategoryPlot;
-import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.*;
 import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.CategoryItemRenderer;
+import org.jfree.chart.renderer.category.StandardBarPainter;
+import org.jfree.chart.ui.Layer;
 import org.jfree.chart.ui.TextAnchor;
 import org.jfree.data.category.DefaultCategoryDataset;
 
@@ -22,35 +23,46 @@ public class Chart {
     private final String yAxisText;
     private final DefaultCategoryDataset categoryDataset;
     private JFreeChart barChart;
+    private boolean invertColors;
 
-    public Chart(String chartTitle, String yAxisText, String xAxisText, DefaultCategoryDataset categoryDataset) {
+    public Chart(String chartTitle, String yAxisText, String xAxisText, DefaultCategoryDataset categoryDataset, boolean invertColors) {
         this.chartTitle = chartTitle;
         this.xAxisText = xAxisText;
         this.yAxisText = yAxisText;
+        this.invertColors = invertColors;
         this.categoryDataset = categoryDataset;
         this.createChart();
         this.color();
     }
 
-    private void color() {
+    public void color() {
         CategoryPlot categoryplot = barChart.getCategoryPlot();
         BarRenderer bar = new BarRenderer();
         bar.setItemMargin(0); //reduce the width between the bars.
-        bar.setSeriesPaint(0,new Color(30,144,255)); //first bar
+        bar.setSeriesPaint(0,new Color(20, 152, 222)); //first bar
+        if (invertColors) {
+            bar.setSeriesPaint(0,new Color(222, 20, 20)); //first bar
+            bar.setSeriesPaint(1,new Color(20, 152, 222)); //second bar
+            bar.setItemMargin(-0.5);
+        }
         categoryplot.setRenderer(bar);
-        categoryplot.setBackgroundPaint(new Color(192, 192, 192));
+        categoryplot.setBackgroundPaint(new Color(199, 199, 199, 255));
 
         CategoryItemRenderer renderer = ((CategoryPlot)barChart.getPlot()).getRenderer();
 
         renderer.setDefaultItemLabelGenerator(new StandardCategoryItemLabelGenerator());
         renderer.setDefaultItemLabelsVisible(true);
         ItemLabelPosition position = new ItemLabelPosition(ItemLabelAnchor.OUTSIDE12,
-                TextAnchor.TOP_CENTER);
+                TextAnchor.BOTTOM_CENTER);
         renderer.setDefaultPositiveItemLabelPosition(position);
         renderer.setDefaultItemLabelFont(new Font("SansSerif", Font.PLAIN, 12));
 
-    }
+        final CategoryPlot plot = barChart.getCategoryPlot();
 
+        BarRenderer plotRenderer = (BarRenderer) plot.getRenderer();
+        plotRenderer.setShadowVisible(false);
+        ((BarRenderer) plot.getRenderer()).setBarPainter(new StandardBarPainter());
+    }
 
     private void createChart() {
         this.barChart = ChartFactory.createBarChart(

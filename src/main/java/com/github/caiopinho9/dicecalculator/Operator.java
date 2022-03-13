@@ -1,5 +1,6 @@
 package com.github.caiopinho9.dicecalculator;
 
+import javax.swing.*;
 import java.lang.reflect.Array;
 import java.util.Arrays;
 
@@ -13,6 +14,7 @@ private String expression;
     private String[] expandedExpression;
     private double[] possibility = new double[200];
     private int bonus = 0;
+    private int difficultyClass;
     private double[] oldSummatory;
     private boolean finish = true;
 
@@ -25,28 +27,53 @@ private String expression;
 
     void expand(){
 
-//      Ex: 4d6 + 2d8 + 3 -> 4d6/+/2d8/+/3
-        expandedExpression = expression.split(" ", 12);
-        for (int expressionNumber = 0; expressionNumber<expandedExpression.length; expressionNumber++){
+//      Ex: 4d6+2d8+3 -> 4d6/2d8/3
+        boolean firstDice = true;
+        expression = expression.replaceAll(" ", "");
+        expression = expression.toUpperCase();
+
+        expression = expression.replaceAll("CD", "DC");
+        expression =  expression.replaceAll("DC", "DC");
+        expression = expression.replaceAll("CA", "DC");
+        expression =  expression.replaceAll("AC", "DC");
+
+        if (expression.contains("DC")) {
+            String[] tempExpression;
+            tempExpression = expression.split("DC",2);
+            expression = tempExpression[0];
+            difficultyClass = Integer.parseInt(tempExpression[1]);
+        }
+
+        if (expression.contains("+")) {
+            expandedExpression = expression.split("\\+", 12);
+            for (int expressionNumber = 0; expressionNumber < expandedExpression.length; expressionNumber++) {
 
 //
-            if (expandedExpression[expressionNumber].contains("d")){
-                readDice(expressionNumber);
-            }
+                if (expandedExpression[expressionNumber].contains("D") && firstDice) {
+                    readDice(expressionNumber);
+                    firstDice = false;
 
-            if (expandedExpression[expressionNumber].contains("+")){
-                if (expandedExpression[expressionNumber+1].contains("d")) {
-                    expressionNumber++;
-                    String[] division = expandedExpression[expressionNumber].split("d", 2);
+                } else if (expandedExpression[expressionNumber].contains("D") && !firstDice) {
+                    String[] division = expandedExpression[expressionNumber].split("D", 2);
                     int times = Integer.parseInt(division[0]);
                     int side = Integer.parseInt(division[1]);
                     addDice(times, side, oldSummatory);
 
                 } else {
-                    bonus += Integer.parseInt(expandedExpression[expressionNumber+1]);
+                    bonus += Integer.parseInt(expandedExpression[expressionNumber]);
                 }
             }
+        } else {
+            if (expression.contains("D")) {
+                expandedExpression = new String[1];
+                expandedExpression[0] = expression;
+                readDice(0);
+            } else {
+                JOptionPane.showMessageDialog (null, "Error: No valid expression");
+
+            }
         }
+
         finish();
     }
 
@@ -73,9 +100,6 @@ private String expression;
 
                 for (int newSummatoryIndex = 0; newSummatoryIndex < newSummatory.length; newSummatoryIndex++) {
                     if (newSummatory[newSummatoryIndex] != 0) {
-                        if (summatoryBackupIndex == 1363) {
-                            System.out.println(1363);
-                        }
                         summatoryBackup[summatoryBackupIndex] = oldSummatory[oldSummatoryIndex] +
                                                                 newSummatory[newSummatoryIndex];
                         summatoryBackupIndex++;
@@ -93,7 +117,7 @@ private String expression;
         if (expandedExpression[expressionNumber].contains(">")) {
 
 //            Divide the expression in 3 parts, and check which one is just the side of a dice
-            String[] division = expandedExpression[expressionNumber].split("d", 3);
+            String[] division = expandedExpression[expressionNumber].split("D", 3);
 
             dice = new Dice(Integer.parseInt(division[2]));
             possibility = dice.doAdvantage(true);
@@ -103,7 +127,7 @@ private String expression;
         } else if (expandedExpression[expressionNumber].contains("<")) {
 
 //            Divide the expression in 3 parts, and check which one is just the side of a dice
-            String[] division = expandedExpression[expressionNumber].split("d", 3);
+            String[] division = expandedExpression[expressionNumber].split("D", 3);
 
             dice = new Dice(Integer.parseInt(division[2]));
             possibility = dice.doAdvantage(true);
@@ -112,7 +136,7 @@ private String expression;
 
 //        Soma Ex: 4d6
         } else {
-            String[] division = expandedExpression[expressionNumber].split("d", 2);
+            String[] division = expandedExpression[expressionNumber].split("D", 2);
 
             int times = Integer.parseInt(division[0]);
             int side = Integer.parseInt(division[1]);
@@ -188,5 +212,9 @@ private String expression;
 
     public void setOldSummatory(double[] oldSummatory) {
         this.oldSummatory = oldSummatory;
+    }
+
+    public int getDifficultyClass() {
+        return difficultyClass;
     }
 }
