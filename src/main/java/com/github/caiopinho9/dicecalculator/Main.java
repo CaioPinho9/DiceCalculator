@@ -68,7 +68,8 @@ public class Main {
             }
         }
 
-        Chart chart = new Chart(title, "", expression, dataset, invertColor);
+        boolean d100 = operator.isD100();
+        Chart chart = new Chart(title, "", expression, dataset, invertColor, d100);
 
         chart.showChart(1000,700);
 

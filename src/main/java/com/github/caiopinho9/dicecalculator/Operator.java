@@ -22,6 +22,7 @@ private String expression;
     private boolean finish = true;
     private boolean advantage = false;
     private boolean disadvantage = false;
+    private boolean d100 = false;
 
 
 
@@ -70,18 +71,20 @@ private String expression;
                     bonus += Integer.parseInt(expandedExpression[expressionNumber]);
                 }
             }
+
+        } else if (expression.contains("D")) {
+            expandedExpression = new String[1];
+            expandedExpression[0] = expression;
+            readDice(0);
+
+        } else if (expression.matches("[0-9]+")) {
+            oldSummatory = new double[1];
+            expression = expression.replaceAll("\\D+", "");
+            oldSummatory[0] = Double.parseDouble(expression);
+
         } else {
-            if (expression.contains("D")) {
-                expandedExpression = new String[1];
-                expandedExpression[0] = expression;
-                readDice(0);
-            } else if (expression.equals("3")) {
-                JOptionPane.showMessageDialog (null, "Toma no Cu");
+            JOptionPane.showMessageDialog(null,"Error: No valid expression.");
 
-            } else {
-                JOptionPane.showMessageDialog (null, "Error: No valid expression");
-
-            }
         }
         finish();
     }
@@ -120,7 +123,6 @@ private String expression;
     }
 
     private void readDice(int expressionNumber) {
-        Dice dice = null;
 
 //        2>d20 3<d20 4>d100 4d6~1
 
@@ -195,6 +197,10 @@ private String expression;
         double[] summatory = new double[(int) Math.pow(side,times)+1];
         Arrays.fill(summatory, 0);
         Arrays.fill(diceArray, 1);
+
+        if (side == 100) {
+            d100 = true;
+        }
 
 //          [1,1,1,1]
         int lastIndex = 0;
@@ -290,5 +296,9 @@ private String expression;
 
     public int getDifficultyClass() {
         return difficultyClass;
+    }
+
+    public boolean isD100() {
+        return d100;
     }
 }

@@ -24,15 +24,23 @@ public class Chart {
     private final DefaultCategoryDataset categoryDataset;
     private JFreeChart barChart;
     private boolean invertColors;
+    private boolean d100;
 
-    public Chart(String chartTitle, String yAxisText, String xAxisText, DefaultCategoryDataset categoryDataset, boolean invertColors) {
+    public Chart(String chartTitle,
+                 String yAxisText,
+                 String xAxisText,
+                 DefaultCategoryDataset categoryDataset,
+                 boolean invertColors,
+                 boolean d100) {
         this.chartTitle = chartTitle;
         this.xAxisText = xAxisText;
         this.yAxisText = yAxisText;
         this.invertColors = invertColors;
         this.categoryDataset = categoryDataset;
+        this.d100 = d100;
         this.createChart();
         this.color();
+
     }
 
     public void color() {
@@ -40,7 +48,8 @@ public class Chart {
         BarRenderer bar = new BarRenderer();
         bar.setItemMargin(0); //reduce the width between the bars.
         bar.setSeriesPaint(0,new Color(20, 152, 222)); //first bar
-        if (invertColors) {
+        bar.setSeriesPaint(1,new Color(222, 20, 20)); //second bar
+        if (invertColors && !d100) {
             bar.setSeriesPaint(0,new Color(222, 20, 20)); //first bar
             bar.setSeriesPaint(1,new Color(20, 152, 222)); //second bar
             bar.setItemMargin(-0.5);
