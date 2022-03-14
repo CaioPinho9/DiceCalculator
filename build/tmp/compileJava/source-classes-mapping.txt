@@ -1,5 +1,3 @@
-com/github/caiopinho9/dicecalculator/Dice.java
- com.github.caiopinho9.dicecalculator.Dice
 com/github/caiopinho9/dicecalculator/Chart.java
  com.github.caiopinho9.dicecalculator.Chart
 com/github/caiopinho9/dicecalculator/Operator.java

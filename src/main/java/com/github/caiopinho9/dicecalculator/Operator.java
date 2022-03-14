@@ -1,10 +1,7 @@
 package com.github.caiopinho9.dicecalculator;
 
 import javax.swing.*;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.IntStream;
 
 public class Operator {
 
@@ -14,18 +11,14 @@ public class Operator {
 //    CD
 private String expression;
     private String[] expandedExpression;
-    private double[] possibility = new double[200];
+    private final double[] possibility = new double[200];
     private int bonus = 0;
     private int difficultyClass;
     private int reduceTimes = 0;
     private double[] oldSummatory;
-    private boolean finish = true;
     private boolean advantage = false;
     private boolean disadvantage = false;
     private boolean d100 = false;
-
-
-
 
     public Operator(String expression) {
         this.expression = expression;
@@ -90,11 +83,9 @@ private String expression;
     }
 
     private void finish() {
-        if (finish) {
-            for (int oldSummatoryIndex = 0; oldSummatoryIndex < oldSummatory.length; oldSummatoryIndex++) {
-                if (oldSummatory[oldSummatoryIndex] != 0) {
-                    possibility[(int) oldSummatory[oldSummatoryIndex]] += 1;
-                }
+        for (int oldSummatoryIndex = 0; oldSummatoryIndex < oldSummatory.length; oldSummatoryIndex++) {
+            if (oldSummatory[oldSummatoryIndex] != 0) {
+                possibility[(int) oldSummatory[oldSummatoryIndex]] += 1;
             }
         }
     }
@@ -126,9 +117,7 @@ private String expression;
 
 //        2>d20 3<d20 4>d100 4d6~1
 
-
-
-//        Vantagem Ex: d20>d20
+//        Advantage Ex: d20>d20
         if (expandedExpression[expressionNumber].contains(">") || expandedExpression[expressionNumber].contains("<")) {
 
             advantage = true;
@@ -145,26 +134,6 @@ private String expression;
             int sides = Integer.parseInt(division[1]);
             oldSummatory = diceArray(times, sides);
 
-
-
-/*
-            dice = new Dice(Integer.parseInt(division[2]));
-            possibility = dice.doAdvantage(true);
-            finish = false;
-
- */
-/*
-//        Desvantagem Ex: d20<d20
-        } else if (expandedExpression[expressionNumber].contains("<")) {
-
-//            Divide the expression in 3 parts, and check which one is just the side of a dice
-            String[] division = expandedExpression[expressionNumber].split("D", 3);
-
-            dice = new Dice(Integer.parseInt(division[2]));
-            possibility = dice.doAdvantage(true);
-            finish = false;
-
- */
         } else if (expandedExpression[expressionNumber].contains("~")){
             String[] reduce = expandedExpression[expressionNumber].split("~",2);
             String[] division = reduce[0].split("D", 2);
@@ -284,10 +253,6 @@ private String expression;
 
     public double[] getPossibility() {
         return possibility;
-    }
-
-    public double[] getOldSummatory() {
-        return oldSummatory;
     }
 
     public void setOldSummatory(double[] oldSummatory) {
