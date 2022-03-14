@@ -1,8 +1,10 @@
 package com.github.caiopinho9.dicecalculator;
 
 import javax.swing.*;
-import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public class Operator {
 
@@ -15,8 +17,13 @@ private String expression;
     private double[] possibility = new double[200];
     private int bonus = 0;
     private int difficultyClass;
+    private int reduceTimes = 0;
     private double[] oldSummatory;
     private boolean finish = true;
+    private boolean advantage = false;
+    private boolean disadvantage = false;
+
+
 
 
     public Operator(String expression) {
@@ -115,16 +122,36 @@ private String expression;
     private void readDice(int expressionNumber) {
         Dice dice = null;
 
+//        2>d20 3<d20 4>d100 4d6~1
+
+
+
 //        Vantagem Ex: d20>d20
-        if (expandedExpression[expressionNumber].contains(">")) {
+        if (expandedExpression[expressionNumber].contains(">") || expandedExpression[expressionNumber].contains("<")) {
 
-//            Divide the expression in 3 parts, and check which one is just the side of a dice
-            String[] division = expandedExpression[expressionNumber].split("D", 3);
+            advantage = true;
+            if (expandedExpression[expressionNumber].contains("<")) {
+                disadvantage = true;
+            }
 
+            expandedExpression[expressionNumber] = expandedExpression[expressionNumber].replace(">", "");
+            expandedExpression[expressionNumber] = expandedExpression[expressionNumber].replace("<", "");
+
+//            Divide the expression in 2 parts, and check which one is just the side of a dice
+            String[] division = expandedExpression[expressionNumber].split("D", 2);
+            int times = Integer.parseInt(division[0]);
+            int sides = Integer.parseInt(division[1]);
+            oldSummatory = diceArray(times, sides);
+
+
+
+/*
             dice = new Dice(Integer.parseInt(division[2]));
             possibility = dice.doAdvantage(true);
             finish = false;
 
+ */
+/*
 //        Desvantagem Ex: d20<d20
         } else if (expandedExpression[expressionNumber].contains("<")) {
 
@@ -134,7 +161,18 @@ private String expression;
             dice = new Dice(Integer.parseInt(division[2]));
             possibility = dice.doAdvantage(true);
             finish = false;
+
+ */
         } else if (expandedExpression[expressionNumber].contains("~")){
+            String[] reduce = expandedExpression[expressionNumber].split("~",2);
+            String[] division = reduce[0].split("D", 2);
+
+            advantage = true;
+
+            int times = Integer.parseInt(division[0]);
+            int sides = Integer.parseInt(division[1]);
+            reduceTimes = Integer.parseInt(reduce[1])+1;
+            oldSummatory = diceArray(times, sides);
 
 //        Soma Ex: 4d6
         } else {
@@ -166,9 +204,14 @@ private String expression;
 
 //            possibility[Arrays.stream(diceArray).sum()] += 1;
 
-//                Saves to add later
-            summatory[summatoryIndex] = Arrays.stream(diceArray).sum();
+//                Saves to add
+            if (advantage) {
+                summatory[summatoryIndex] = advantage(diceArray, times);
+            } else {
+                summatory[summatoryIndex] = Arrays.stream(diceArray).sum();
+            }
             summatoryIndex++;
+
 
 //                Checks all index
             for (int check = 0; check<=lastIndex; check++) {
@@ -187,8 +230,6 @@ private String expression;
                     break;
                 }
 
-
-
 //                    When this array[index] is full it resets and increases the index
                 if (diceArray[index] == side) {
                     diceArray[index] = 1;
@@ -203,6 +244,32 @@ private String expression;
             }
         }
         return summatory;
+    }
+
+    private int advantage(int[] diceArray, int times) {
+        int[] sortedDiceArray = Arrays.stream(diceArray).sorted().toArray();
+        int sum = 0;
+        if (reduceTimes != 0) {
+            times = reduceTimes;
+        }
+//      Advantage
+        if (!disadvantage) {
+            for (int i = 0; i<times-1; i++) {
+                sortedDiceArray[i] = 0;
+            }
+//      Disadvantage
+        } else {
+            for (int i = 0; i<times-1; i++) {
+                int o = sortedDiceArray.length-i-1;
+                sortedDiceArray[o] = 0;
+
+            }
+        }
+
+        for (int summatoryIndex = 0; summatoryIndex < sortedDiceArray.length; summatoryIndex++) {
+            sum = Arrays.stream(sortedDiceArray).sum();
+        }
+        return sum;
     }
 
     public int getBonus() {
